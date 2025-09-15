@@ -191,12 +191,18 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/login">
-                <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+                <Button
+                  size="lg"
+                  className="text-lg px-8 py-6 bg-black text-white hover:bg-black/85 shadow-md hover:shadow-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                >
                   Get Started Today
                 </Button>
               </Link>
               <Link href="/modules">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                <Button
+                  size="lg"
+                  className="text-lg px-8 py-6 bg-white text-black border border-black hover:bg-gray-200 transition-colors shadow-sm hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                >
                   Explore Modules
                 </Button>
               </Link>

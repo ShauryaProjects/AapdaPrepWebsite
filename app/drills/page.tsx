@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -88,6 +88,19 @@ export default function DrillsPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
   const [score, setScore] = useState(0)
+  const [selectedDrill, setSelectedDrill] = useState<typeof drills[0] | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const previousOverflow = document.body.style.overflow
+      document.body.style.overflow = "hidden"
+      return () => {
+        document.body.style.overflow = previousOverflow
+      }
+    }
+  }, [isModalOpen])
 
   const handleQuizAnswer = (answerIndex: number) => {
     setSelectedAnswer(answerIndex)
@@ -125,6 +138,16 @@ export default function DrillsPage() {
       month: "short",
       year: "numeric",
     })
+  }
+
+  const handleDetailsClick = (drill: typeof drills[0]) => {
+    setSelectedDrill(drill)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setSelectedDrill(null)
   }
 
   return (
@@ -257,7 +280,12 @@ export default function DrillsPage() {
                             View Results
                           </Button>
                         )}
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="cursor-pointer"
+                          onClick={() => handleDetailsClick(drill)}
+                        >
                           Details
                         </Button>
                       </div>
@@ -405,6 +433,152 @@ export default function DrillsPage() {
 
       <Footer />
       <ChatAssistant />
+
+      {/* Drill Details Modal */}
+      {isModalOpen && selectedDrill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={closeModal}
+          />
+          
+          {/* Modal Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden"
+          >
+            {/* Header */}
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-12 h-12 rounded-xl ${DISASTER_TYPES[selectedDrill.type].bgColor} flex items-center justify-center text-xl`}
+                  >
+                    {DISASTER_TYPES[selectedDrill.type].icon}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      {selectedDrill.title}
+                    </h3>
+                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(selectedDrill.date)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {selectedDrill.time}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Status and Duration */}
+              <div className="flex items-center justify-between">
+                <Badge className={getStatusColor(selectedDrill.status)}>
+                  {selectedDrill.status.toUpperCase()}
+                </Badge>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Duration: {selectedDrill.duration}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Description</h4>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {selectedDrill.description}
+                </p>
+              </div>
+
+              {/* Participation Details */}
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Participation</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Participants</span>
+                    <span className="font-medium">
+                      {selectedDrill.participants}/{selectedDrill.maxParticipants}
+                    </span>
+                  </div>
+                  <Progress 
+                    value={(selectedDrill.participants / selectedDrill.maxParticipants) * 100} 
+                    className="h-2" 
+                  />
+                  <div className="text-xs text-gray-500 dark:text-gray-500 text-center">
+                    {Math.round((selectedDrill.participants / selectedDrill.maxParticipants) * 100)}% capacity
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Additional Information</h4>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between">
+                    <span>Disaster Type:</span>
+                    <span className="capitalize font-medium">{selectedDrill.type}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Max Participants:</span>
+                    <span className="font-medium">{selectedDrill.maxParticipants}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Current Participants:</span>
+                    <span className="font-medium">{selectedDrill.participants}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="flex gap-3">
+                {selectedDrill.status === "upcoming" && (
+                  <Button className="flex-1 mb-2 sm:mb-0">
+                    <Users className="w-4 h-4 mr-2" />
+                    Join Drill
+                  </Button>
+                )}
+                {selectedDrill.status === "active" && (
+                  <Button className="flex-1 bg-green-600 hover:bg-green-700 mb-2 sm:mb-0">
+                    <Play className="w-4 h-4 mr-2" />
+                    Join Active Drill
+                  </Button>
+                )}
+                {selectedDrill.status === "completed" && (
+                  <Button variant="outline" className="flex-1">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    View Results
+                  </Button>
+                )}
+                <Button variant="outline" onClick={closeModal}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
