@@ -63,7 +63,7 @@ export default function LoginPage() {
               <Shield className="h-8 w-8" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome to DisasterReady</h1>
+          <h1 className="text-2xl font-bold text-foreground">Welcome to AapdaPrep</h1>
           <p className="text-muted-foreground mt-2">Sign in to your account or create a new one</p>
         </motion.div>
 
@@ -163,7 +163,7 @@ export default function LoginPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Create Account</CardTitle>
-                  <CardDescription>Join DisasterReady and start your preparedness journey</CardDescription>
+                  <CardDescription>Join AapdaPrep and start your preparedness journey</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">

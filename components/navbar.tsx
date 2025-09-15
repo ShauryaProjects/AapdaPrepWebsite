@@ -86,7 +86,7 @@ export function Navbar() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
               <Shield className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold text-foreground">DisasterReady</span>
+            <span className="text-xl font-bold text-foreground">AapdaPrep</span>
           </Link>
 
           {/* Desktop Navigation */}

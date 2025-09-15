@@ -11,7 +11,7 @@ export function Footer() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
               <Shield className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold">DisasterReady</span>
+            <span className="text-xl font-bold">AapdaPrep</span>
           </div>
           <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             Empowering communities with comprehensive disaster preparedness education and training.
@@ -95,7 +95,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 DisasterReady. Built for Smart India Hackathon. All rights reserved.</p>
+          <p>&copy; 2025 AapdaPrep. Built for Smart India Hackathon. All rights reserved.</p>
         </div>
       </div>
     </footer>

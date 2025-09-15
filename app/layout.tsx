@@ -7,7 +7,7 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "DisasterReady - Digital Disaster Education Platform",
+  title: "AapdaPrep - Digital Disaster Education Platform",
   description: "Comprehensive disaster preparedness and education platform for schools and colleges in India",
   generator: "v0.app",
 }
