@@ -103,6 +103,22 @@ const getRankIcon = (rank: number) => {
 
 export default function GamificationPage() {
   const currentUser = { rank: 7, name: "You", points: 1750, level: "Beginner", badges: 6 }
+  const avatarPool = [
+    "/avatars/a1.jpg",
+    "/avatars/a2.jpg",
+    "/avatars/a3.jpg",
+    "/avatars/a4.jpg",
+    "/avatars/a5.jpg",
+    "/avatars/a6.jpg",
+    "/avatars/a7.jpg",
+    "/avatars/a4.jpg",
+    "/avatars/a3.jpg",
+    "/avatars/a1.jpg",
+  ]
+  const pickAvatar = (seed: number) => {
+    const idx = Math.abs(Math.floor((Math.sin(seed) * 10000)) % avatarPool.length)
+    return avatarPool[idx]
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -235,32 +251,61 @@ export default function GamificationPage() {
                   <CardDescription>Top performers in disaster preparedness training</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {leaderboard.map((user, index) => (
-                      <motion.div
-                        key={user.rank}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.05 }}
-                        className={`flex items-center gap-4 p-4 rounded-lg border ${
-                          user.rank <= 3
-                            ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950"
-                            : "bg-muted/50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-center w-8">{getRankIcon(user.rank)}</div>
-                        <div className="text-2xl">{user.avatar}</div>
-                        <div className="flex-1">
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {user.points} points • {user.badges} badges
+                  {/* Podium Top 3 */}
+                  <div className="relative rounded-2xl bg-gradient-to-b from-indigo-900/40 to-transparent p-6 mb-6">
+                    <div className="grid grid-cols-3 gap-4 items-end text-center">
+                      {leaderboard
+                        .filter((u) => u.rank <= 3)
+                        .sort((a, b) => a.rank - b.rank)
+                        .map((u) => (
+                          <div key={u.rank} className={`relative ${u.rank === 1 ? "order-2" : u.rank === 2 ? "order-1" : "order-3"}`}>
+                            {u.rank === 1 && (
+                              <>
+                                {/* Crown without background */}
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-3xl">👑</div>                               
+                              </>
+                            )}
+                            <div className={`mx-auto rounded-full ring-4 ring-indigo-500/40 overflow-hidden ${u.rank === 1 ? "w-24 h-24" : "w-20 h-20"}`}>
+                              <img src={pickAvatar(u.rank)} alt={u.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="mt-2 text-sm text-white/90 font-medium">{u.name}</div>
+                            <div className="text-xs text-purple-200">{u.points} points</div>
+                            <div className={`mt-3 mx-auto rounded-t-lg ${u.rank === 1 ? "h-10 bg-purple-600" : u.rank === 2 ? "h-7 bg-purple-500" : "h-6 bg-purple-400"}`}></div>
+                            <div className="absolute -bottom-4 left-[52%] -translate-x-1/2 w-10 h-10 rounded-full bg-indigo-700 text-white text-lg font-extrabold flex items-center justify-center shadow">{u.rank}</div>
                           </div>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {user.level}
-                        </Badge>
-                      </motion.div>
-                    ))}
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* Header Row */}
+                  <div className="flex items-center justify-between px-4 py-2 rounded-xl bg-indigo-950/40 text-indigo-200 text-sm mb-3">
+                    <div className="w-14">Rank</div>
+                    <div className="flex-1">Player</div>
+                    <div className="w-28 text-right">Points</div>
+                  </div>
+
+                  {/* Ranked List */}
+                  <div className="space-y-3">
+                    {leaderboard
+                      .filter((u) => u.rank > 3)
+                      .map((user, index) => (
+                        <motion.div
+                          key={user.rank}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.6, delay: index * 0.05 }}
+                          className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600/80 to-indigo-600/80 text-white shadow border border-white/10"
+                        >
+                          <div className="w-16 text-lg font-extrabold opacity-90 pl-2">{user.rank}</div>
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-white/20">
+                              <img src={pickAvatar(user.rank + 100)} alt={user.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="font-medium">{user.name}</div>
+                          </div>
+                          <div className="w-28 text-right text-sm opacity-90">{user.points} points</div>
+                        </motion.div>
+                      ))}
                   </div>
                 </CardContent>
               </Card>
@@ -290,7 +335,7 @@ export default function GamificationPage() {
                         transition={{ duration: 0.6, delay: index * 0.05 }}
                         className={`p-4 rounded-lg border text-center transition-all duration-300 ${
                           badge.earned
-                            ? "bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-200 dark:border-yellow-800 hover:shadow-lg"
+                            ? "bg-gradient-to-br from-fuchsia-500/15 via-violet-500/15 to-cyan-500/15 dark:from-fuchsia-400/15 dark:via-violet-400/15 dark:to-cyan-400/15 border-fuchsia-300/40 dark:border-fuchsia-700/40 ring-1 ring-fuchsia-400/30 hover:shadow-[0_0_30px_-10px_rgba(217,70,239,0.8)] hover:scale-[1.02]"
                             : "bg-muted/50 opacity-60 grayscale"
                         }`}
                       >
