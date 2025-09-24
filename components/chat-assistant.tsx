@@ -132,9 +132,9 @@ export function ChatAssistant() {
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="fixed bottom-24 right-6 z-50 w-[26rem] md:w-[32rem]"
+            className="fixed bottom-24 right-2 left-2 sm:right-6 sm:left-auto z-50 w-auto sm:w-[26rem] md:w-[32rem]"
           >
-            <Card className="h-[32rem] md:h-[36rem] flex flex-col shadow-2xl border border-border/60">
+            <Card className="h-[28rem] sm:h-[32rem] md:h-[36rem] flex flex-col shadow-2xl border border-border/60">
               {/* Header */}
               <div className="flex items-center justify-between p-3 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                 <h3 className="font-semibold">Disaster Assistant</h3>

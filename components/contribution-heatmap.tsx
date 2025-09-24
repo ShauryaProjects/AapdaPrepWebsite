@@ -210,46 +210,51 @@ export default function ContributionHeatmap({
 
   return (
     <div className="space-y-3" ref={containerRef}>
-      {/* Month labels */}
-      <div className="flex gap-[2px] text-[10px] text-muted-foreground select-none" style={{ marginLeft: leftLabelWidthPx }}>
-        {monthLabels.map((label, i) => (
-          <div key={i} className="text-center" style={{ width: cellSize }}>
-            {label}
+      {/* Mobile scrollable container */}
+      <div className="overflow-x-auto overflow-y-visible">
+        <div className="min-w-max">
+          {/* Month labels */}
+          <div className="flex gap-[2px] text-[10px] text-muted-foreground select-none" style={{ marginLeft: leftLabelWidthPx }}>
+            {monthLabels.map((label, i) => (
+              <div key={i} className="text-center" style={{ width: cellSize }}>
+                {label}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="flex" style={{ columnGap: gapPx }}>
-        {/* Weekday labels column */}
-        <div className="grid grid-rows-7 text-[10px] text-muted-foreground select-none" style={{ rowGap: gapPx, marginRight: 4, width: leftLabelWidthPx }}>
-          {[0, 1, 2, 3, 4, 5, 6].map((r) => (
-            <div key={r} className="flex items-center" style={{ height: cellSize }}>
-              {weekdayLabelForRow(r)}
+          <div className="flex" style={{ columnGap: gapPx }}>
+            {/* Weekday labels column */}
+            <div className="grid grid-rows-7 text-[10px] text-muted-foreground select-none" style={{ rowGap: gapPx, marginRight: 4, width: leftLabelWidthPx }}>
+              {[0, 1, 2, 3, 4, 5, 6].map((r) => (
+                <div key={r} className="flex items-center" style={{ height: cellSize }}>
+                  {weekdayLabelForRow(r)}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Heatmap cells */}
-        {matrix.map((col, colIdx) => (
-          <div key={colIdx} className="grid grid-rows-7" style={{ rowGap: gapPx }}>
-            {col.map((dayDate, rowIdx) => {
-              const iso = formatISODate(dayDate)
-              const isToday = iso === todayISO
-              const level = getLevel(iso)
-              const color = levelToColor(level)
-              return (
-                <button
-                  key={`${colIdx}-${rowIdx}`}
-                  title={iso}
-                  aria-label={iso}
-                  onClick={() => toggleDay(dayDate)}
-                  className={`rounded-[2px] transition-colors ${color} ${isToday ? "ring-1 ring-offset-1 ring-primary/60" : ""}`}
-                  style={{ width: cellSize, height: cellSize }}
-                />
-              )
-            })}
+            {/* Heatmap cells */}
+            {matrix.map((col, colIdx) => (
+              <div key={colIdx} className="grid grid-rows-7" style={{ rowGap: gapPx }}>
+                {col.map((dayDate, rowIdx) => {
+                  const iso = formatISODate(dayDate)
+                  const isToday = iso === todayISO
+                  const level = getLevel(iso)
+                  const color = levelToColor(level)
+                  return (
+                    <button
+                      key={`${colIdx}-${rowIdx}`}
+                      title={iso}
+                      aria-label={iso}
+                      onClick={() => toggleDay(dayDate)}
+                      className={`rounded-[2px] transition-colors ${color} ${isToday ? "ring-1 ring-offset-1 ring-primary/60" : ""}`}
+                      style={{ width: cellSize, height: cellSize }}
+                    />
+                  )
+                })}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
