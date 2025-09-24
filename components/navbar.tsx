@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -43,36 +43,38 @@ const navigation = [
   { name: "Emergency Tools", href: "/emergency", icon: Phone },
 ]
 
-const notifications = [
-  {
-    id: 1,
-    title: "Earthquake Alert",
-    message: "Magnitude 4.2 earthquake detected in your region",
-    time: "2 minutes ago",
-    type: "alert",
-    read: false,
-  },
-  {
-    id: 2,
-    title: "Module Completed",
-    message: "Congratulations! You've completed the Fire Safety module",
-    time: "1 hour ago",
-    type: "achievement",
-    read: false,
-  },
-  {
-    id: 3,
-    title: "New Drill Available",
-    message: "Flood preparedness drill is now available",
-    time: "3 hours ago",
-    type: "info",
-    read: true,
-  },
-]
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
   const [alertCount, setAlertCount] = useState(3)
+  const notificationRef = useRef<HTMLDivElement>(null)
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Earthquake Alert",
+      message: "Magnitude 4.2 earthquake detected in your region",
+      time: "2 minutes ago",
+      type: "alert",
+      read: false,
+    },
+    {
+      id: 2,
+      title: "Module Completed",
+      message: "Congratulations! You've completed the Fire Safety module",
+      time: "1 hour ago",
+      type: "achievement",
+      read: false,
+    },
+    {
+      id: 3,
+      title: "New Drill Available",
+      message: "Flood preparedness drill is now available",
+      time: "3 hours ago",
+      type: "info",
+      read: true,
+    },
+  ])
   const pathname = usePathname()
   const { user } = useAuth()
 
@@ -80,8 +82,41 @@ export function Navbar() {
     setIsOpen(false)
   }, [pathname])
 
+  // Close notifications when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false)
+      }
+    }
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showNotifications])
+
+  const markAsRead = (id: number) => {
+    setNotifications(prev => 
+      prev.map(notif => 
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    )
+    setAlertCount(prev => Math.max(0, prev - 1))
+  }
+
+  const markAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notif => ({ ...notif, read: true }))
+    )
+    setAlertCount(0)
+  }
+
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -120,49 +155,66 @@ export function Navbar() {
           {/* Right side items */}
           <div className="flex items-center space-x-2">
             {/* Notification Bell */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="relative cursor-pointer hover:bg-accent">
-                  <Bell className="h-5 w-5" />
-                  {alertCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs animate-pulse-glow"
-                    >
-                      {alertCount}
-                    </Badge>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {notifications.map((notification) => (
-                  <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-3">
-                    <div className="flex items-start justify-between w-full">
-                      <div className="flex-1">
-                        <p className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
-                          {notification.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {notification.time}
-                        </p>
+            <div className="relative" ref={notificationRef}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative cursor-pointer hover:bg-accent"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <Bell className="h-5 w-5" />
+                {alertCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs animate-pulse-glow"
+                  >
+                    {alertCount}
+                  </Badge>
+                )}
+              </Button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[9999]">
+                  <div className="px-3 py-2 text-sm font-semibold border-b border-gray-200 dark:border-gray-700">
+                    Notifications
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className="px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className={`font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {notification.time}
+                            </p>
+                          </div>
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-blue-600 rounded-full ml-2 mt-1" />
+                          )}
+                        </div>
                       </div>
-                      {!notification.read && (
-                        <div className="w-2 h-2 bg-blue-600 rounded-full ml-2 mt-1" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-center text-sm text-muted-foreground">
-                  View all notifications
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    ))}
+                  </div>
+                  <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                    <button 
+                      className="text-sm text-muted-foreground hover:text-foreground w-full text-left"
+                      onClick={markAllAsRead}
+                    >
+                      Mark all as read
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Theme Toggle */}
             <ThemeToggle />
