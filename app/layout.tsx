@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   title: "AapdaPrep - Digital Disaster Education Platform",
   description: "Comprehensive disaster preparedness and education platform for schools and colleges in India",
   generator: "v0.app",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" }
+    ],
+    apple: "/favicon.svg",
+  },
 }
 
 const geistSans = Inter({ subsets: ["latin"], variable: "--font-geist-sans" })
