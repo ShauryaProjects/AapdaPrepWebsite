@@ -93,7 +93,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex xl:items-center xl:space-x-1">
+          <div className="hidden lg:flex lg:items-center lg:space-x-1">
             {navigation.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -183,8 +183,8 @@ export function Navbar() {
               </Link>
             )}
 
-            {/* Mobile menu button */}
-            <Button variant="ghost" size="sm" className="xl:hidden cursor-pointer hover:bg-accent" onClick={() => setIsOpen(!isOpen)}>
+          {/* Mobile menu button */}
+            <Button variant="ghost" size="sm" className="lg:hidden cursor-pointer hover:bg-accent" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
@@ -198,7 +198,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="xl:hidden"
+              className="lg:hidden"
             >
               <div className="space-y-1 pb-4 pt-2">
                 {navigation.map((item) => {
